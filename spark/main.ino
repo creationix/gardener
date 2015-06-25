@@ -10,7 +10,7 @@ void setup() {
   while (!WiFi.ready()) Spark.process();
 }
 
-IPAddress server = { 192, 168, 1, 144 };
+IPAddress server = { 192, 168, 1, 137 };
 int port = 11000;
 int tries = 0;
 
