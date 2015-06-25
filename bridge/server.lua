@@ -14,14 +14,16 @@ end
 createServer({
   host = "0.0.0.0",
   port = 11000
-}, function (read, write)
+}, function (read, write, socket)
+  p("Client connected", socket)
   local buffer = ""
   for data in read do
     buffer = buffer .. data
     while true do
       local line = buffer:match("^[^\n]*\n")
-      if not line then return end
-      if line:match("^metric [^ ]+ [^ ]") then
+      if not line then break end
+      buffer = buffer:sub(#line + 1)
+      if line:match("^metric [^ ]+ [^ ]+ [^ ]") then
         local now = gmtNow()
         logs[#logs + 1] = "timestamp " .. now .. "\n"
         logs[#logs + 1] = line
@@ -31,7 +33,9 @@ createServer({
         return write()
       end
     end
+    write(".\n")
   end
+  p("Client disconnected", socket)
   return write()
 end)
 print("TCP echo server listening at port 11000 on localhost")
@@ -39,10 +43,13 @@ print("TCP echo server listening at port 11000 on localhost")
 local path = "/var/run/gardener"
 require('fs').unlinkSync(path)
 createServer(path, function (_, write)
-  write("status OK")
-  write(table.concat(logs))
+  p("status requested")
+  local report = "status OK\n" .. table.concat(logs)
   logs = {}
+  print(report)
+  write(report)
   write()
 end)
+require('fs').chmod(path, 511)
 
 print("status socket pipe listening at '" .. path .. "'")
