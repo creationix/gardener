@@ -28,7 +28,7 @@ void loop() {
   if (client.connect(server, port)) {
     Serial.println("connected");
     int light = analogRead(A0);
-    String data = String("metric light-rainbowdash int ") + String(light, DEC) + "\n";
+    String data = String("metric light_rainbowdash int ") + String(light, DEC) + "\n";
     Serial.print(data);
     client.print(data);
     delay(1000);
