@@ -1,8 +1,7 @@
 local createServer = require('coro-net').createServer
-
+local uv = require('uv')
 
 local logs = {}
-
 
 -- Get ms since Jan. 1 1970 in GMT
 local function gmtNow()
@@ -53,3 +52,7 @@ end)
 require('fs').chmod(path, 511)
 
 print("status socket pipe listening at '" .. path .. "'")
+
+print("Dropping to normal user...")
+uv.setgid(1000)
+uv.setuid(1000)
